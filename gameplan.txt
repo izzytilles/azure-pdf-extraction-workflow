@@ -1,0 +1,8 @@
+Image/PDF flow:
+
+    Download PDF
+    Use Document Intelligence to parse PDF
+        Check if images are being returned
+    If images were returned, send them to GPT 4.1 vision-enabled model
+    Then find the places where images are notated in the Document Intelligence [WHAT ARE THEY NOTATED BY] and insert the captions in order for each image (figure)
+    Return full text for inspection
