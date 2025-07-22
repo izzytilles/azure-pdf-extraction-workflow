@@ -2,8 +2,10 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 from azure.ai.documentintelligence import DocumentIntelligenceClient
-from azure.ai.documentintelligence.models import AnalyzeOutputOption, AnalyzeResult
+from azure.ai.documentintelligence.models import AnalyzeOutputOption, AnalyzeResult, AnalyzeDocumentRequest
 from azure.core.credentials import AzureKeyCredential
+from io import BytesIO
+from flask import jsonify
 
 def connect_to_azure_doc_intel():
     """
@@ -33,21 +35,17 @@ def extract_figures_from_pdf(uploaded_file):
     Notes:
         Figures and images are interchangeable terms here, but Azure Document Intelligence refers to them as figures
     """
+    file_bytes = uploaded_file.read()
 
     # create a client for azure doc intelligence
     document_intelligence_client = connect_to_azure_doc_intel()
 
     # set options for converter
-    with open(uploaded_file, "rb") as f:
-        poller = document_intelligence_client.begin_analyze_document(
-            "prebuilt-layout",
-            body=f,
-            output=[AnalyzeOutputOption.FIGURES],
-        )
-    result: AnalyzeResult = poller.result()
-
-    if result.figures:
-        return result.figures
-    else:
-        print("No figures found in the document.")
-        return []
+    doc_to_analyze = AnalyzeDocumentRequest(bytes_source = file_bytes)
+    poller = document_intelligence_client.begin_analyze_document(
+        model_id="prebuilt-layout",
+        analyze_request=doc_to_analyze,
+        output=[AnalyzeOutputOption.FIGURES],
+    )
+    result = poller.result()
+    return jsonify(result.as_dict())
