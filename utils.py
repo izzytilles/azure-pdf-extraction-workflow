@@ -46,6 +46,7 @@ def extract_figures_from_pdf(uploaded_file):
         model_id="prebuilt-layout",
         analyze_request=doc_to_analyze,
         output=[AnalyzeOutputOption.FIGURES],
+        output_content_format = "markdown"
     )
     result = poller.result()
     return jsonify(result.as_dict())
