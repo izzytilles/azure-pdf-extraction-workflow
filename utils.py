@@ -6,6 +6,7 @@ from azure.ai.documentintelligence.models import AnalyzeOutputOption, AnalyzeRes
 from azure.core.credentials import AzureKeyCredential
 from io import BytesIO
 from flask import jsonify
+from pdf2image import convert_from_bytes
 
 def connect_to_azure_doc_intel():
     """
@@ -13,7 +14,7 @@ def connect_to_azure_doc_intel():
     
     Returns:
         document_intelligence_client (DocumentIntelligenceClient): an instance of DocumentIntelligenceClient connected to given Azure account
-        
+    
     Notes:
         Assumes that the environment variables DOC_INTELLIGENCE_ENDPOINT and DOC_INTELLIGENCE_KEY are set
     """
@@ -49,4 +50,19 @@ def extract_figures_from_pdf(uploaded_file):
         output_content_format = "markdown"
     )
     result = poller.result()
+    result_dict = result.as_dict()
+    figures = result_dict.get("figures", [])
     return jsonify(result.as_dict())
+
+def convert_pdf_to_image(uploaded_file):
+    """
+    Converts a PDF file to an image format using pdf2image.
+    
+    Args:
+        uploaded_file (BytesIO): A BytesIO object containing the PDF file data.
+    
+    Returns:
+        list (images): A list of images converted from the PDF.
+    """
+    images = convert_from_bytes(uploaded_file.read())
+    return images
