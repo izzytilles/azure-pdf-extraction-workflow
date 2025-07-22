@@ -1,7 +1,7 @@
 import utils
 import psutil
 import logging
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, send_file
 from io import BytesIO
 
 app = Flask(__name__)

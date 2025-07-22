@@ -54,6 +54,15 @@ def extract_figures_from_pdf(uploaded_file):
     figures = result_dict.get("figures", [])
     return jsonify(result.as_dict())
 
+def convert_pdf_coords_to_pixels(coords):
+    # unpack coordinates TODO: verify this is correct
+    x_top_left, y_top_left, x_top_right, y_top_right, x_bottom_left, y_bottom_left, x_bottom_right, y_bottom_right = coords
+    pixels_per_inch = 72 # based on pdf2image results
+    important_coords = [x_top_left, y_top_left, x_bottom_right, y_bottom_right]
+    # next step - convert these to pixels
+    pixel_coords = [int(coord * pixels_per_inch) for coord in important_coords]
+    return pixel_coords
+
 def convert_pdf_to_image(uploaded_file):
     """
     Converts a PDF file to an image format using pdf2image.
